@@ -3,6 +3,9 @@ import jwt from 'jsonwebtoken';
 
 interface AuthRequest extends Request {
   userId?: string;
+  body: any;
+  params: any;
+  query: any;
 }
 
 const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
