@@ -24,7 +24,7 @@ const Workouts: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    date: '',
+    date: new Date().toISOString().split('T')[0],
     exercises: [],
     duration: 0,
     notes: ''
@@ -49,7 +49,7 @@ const Workouts: React.FC = () => {
     e.preventDefault();
     try {
       await workoutService.create(formData);
-      setFormData({ name: '', date: '', exercises: [], duration: 0, notes: '' });
+      setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], duration: 0, notes: '' });
       setShowForm(false);
       fetchWorkouts();
     } catch (error) {
@@ -58,7 +58,7 @@ const Workouts: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure?')) {
+    if (window.confirm('Are you sure you want to delete this workout?')) {
       try {
         await workoutService.delete(id);
         fetchWorkouts();
@@ -68,68 +68,106 @@ const Workouts: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="loading">Loading your workouts...</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>My Workouts</h1>
-      <button onClick={() => setShowForm(!showForm)}>
-        {showForm ? 'Cancel' : 'Add Workout'}
-      </button>
+    <div className="workouts-container">
+      <div className="workouts-header">
+        <h1>💪 My Workouts</h1>
+        <button 
+          onClick={() => setShowForm(!showForm)} 
+          className="btn btn-primary"
+          style={{ width: 'auto', padding: '0.75rem 2rem' }}
+        >
+          {showForm ? '✕ Cancel' : '+ New Workout'}
+        </button>
+      </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} style={{ marginTop: '20px', padding: '20px', border: '1px solid #ccc' }}>
-          <div>
-            <label>Workout Name: </label>
+        <form onSubmit={handleSubmit} className="workout-form">
+          <h2>Create New Workout</h2>
+          
+          <div className="form-group">
+            <label>Workout Name</label>
             <input
+              type="text"
+              className="form-input"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="e.g., Chest Day, Leg Day"
               required
             />
           </div>
-          <div>
-            <label>Date: </label>
+          
+          <div className="form-group">
+            <label>Date</label>
             <input
               type="date"
+              className="form-input"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               required
             />
           </div>
-          <div>
-            <label>Duration (minutes): </label>
+          
+          <div className="form-group">
+            <label>Duration (minutes)</label>
             <input
               type="number"
+              className="form-input"
               value={formData.duration}
               onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
+              placeholder="60"
             />
           </div>
-          <div>
-            <label>Notes: </label>
+          
+          <div className="form-group">
+            <label>Notes</label>
             <textarea
+              className="form-input"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="How did it go? Any observations?"
+              rows={3}
             />
           </div>
-          <button type="submit">Create Workout</button>
+          
+          <button type="submit" className="btn btn-primary">
+            Create Workout
+          </button>
         </form>
       )}
 
-      <div style={{ marginTop: '20px' }}>
-        {workouts.length === 0 ? (
-          <p>No workouts yet. Create your first one!</p>
-        ) : (
-          workouts.map((workout) => (
-            <div key={workout._id} style={{ padding: '15px', border: '1px solid #ddd', marginBottom: '10px' }}>
+      {workouts.length === 0 ? (
+        <div className="empty-state">
+          <h2>🏋️ No Workouts Yet</h2>
+          <p>Start your fitness journey by creating your first workout!</p>
+        </div>
+      ) : (
+        <div className="workouts-grid">
+          {workouts.map((workout) => (
+            <div key={workout._id} className="workout-card">
               <h3>{workout.name}</h3>
-              <p>Date: {new Date(workout.date).toLocaleDateString()}</p>
-              <p>Duration: {workout.duration} minutes</p>
-              <p>Exercises: {workout.exercises.length}</p>
-              <button onClick={() => handleDelete(workout._id)}>Delete</button>
+              <div className="workout-info">
+                <p>📅 {new Date(workout.date).toLocaleDateString('en-US', { 
+                  weekday: 'short', 
+                  year: 'numeric', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })}</p>
+                <p>⏱️ {workout.duration} minutes</p>
+                <p>🏋️ {workout.exercises.length} exercises</p>
+                {workout.notes && <p>📝 {workout.notes}</p>}
+              </div>
+              <div className="workout-actions">
+                <button onClick={() => handleDelete(workout._id)} className="btn btn-danger">
+                  Delete
+                </button>
+              </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
