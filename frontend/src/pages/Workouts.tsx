@@ -22,6 +22,7 @@ const Workouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     date: new Date().toISOString().split('T')[0],
@@ -48,13 +49,36 @@ const Workouts: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await workoutService.create(formData);
+      if (editingId) {
+        await workoutService.update(editingId, formData);
+        setEditingId(null);
+      } else {
+        await workoutService.create(formData);
+      }
       setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], duration: 0, notes: '' });
       setShowForm(false);
       fetchWorkouts();
     } catch (error) {
-      console.error('Failed to create workout:', error);
+      console.error('Failed to save workout:', error);
     }
+  };
+
+  const handleEdit = (workout: Workout) => {
+    setFormData({
+      name: workout.name,
+      date: workout.date.split('T')[0],
+      exercises: workout.exercises,
+      duration: workout.duration,
+      notes: workout.notes
+    });
+    setEditingId(workout._id);
+    setShowForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], duration: 0, notes: '' });
+    setEditingId(null);
+    setShowForm(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -75,7 +99,10 @@ const Workouts: React.FC = () => {
       <div className="workouts-header">
         <h1>💪 My Workouts</h1>
         <button 
-          onClick={() => setShowForm(!showForm)} 
+          onClick={() => {
+            if (showForm) handleCancelEdit();
+            else setShowForm(true);
+          }} 
           className="btn btn-primary"
           style={{ width: 'auto', padding: '0.75rem 2rem' }}
         >
@@ -85,7 +112,7 @@ const Workouts: React.FC = () => {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="workout-form">
-          <h2>Create New Workout</h2>
+          <h2>{editingId ? 'Edit Workout' : 'Create New Workout'}</h2>
           
           <div className="form-group">
             <label>Workout Name</label>
@@ -133,7 +160,7 @@ const Workouts: React.FC = () => {
           </div>
           
           <button type="submit" className="btn btn-primary">
-            Create Workout
+            {editingId ? 'Update Workout' : 'Create Workout'}
           </button>
         </form>
       )}
@@ -160,6 +187,9 @@ const Workouts: React.FC = () => {
                 {workout.notes && <p>📝 {workout.notes}</p>}
               </div>
               <div className="workout-actions">
+                <button onClick={() => handleEdit(workout)} className="btn btn-primary" style={{ marginRight: '0.5rem' }}>
+                  Edit
+                </button>
                 <button onClick={() => handleDelete(workout._id)} className="btn btn-danger">
                   Delete
                 </button>
