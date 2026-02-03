@@ -14,6 +14,7 @@ A modern full-stack gym training tracker application built with React, Node.js/E
 ## 🎯 Features
 
 ### Core Features
+
 - **User Authentication**: Secure registration and login with JWT tokens
 - **Workout Tracking**: Create, view, update, and delete workout sessions
 - **Exercise Library**: Comprehensive database of exercises with search and filtering
@@ -23,6 +24,7 @@ A modern full-stack gym training tracker application built with React, Node.js/E
 - **Detailed Exercise Logging**: Track sets, reps, weight for each exercise
 
 ### Advanced Features
+
 - **Body Measurements Tracker**: Monitor weight, body fat %, and body measurements over time
   - Visual progress charts with Chart.js
   - Track multiple body metrics (chest, waist, hips, biceps, thighs)
