@@ -11,6 +11,40 @@ A modern full-stack gym training tracker application built with React, Node.js/E
 - **Responsive Design**: Mobile-friendly interface
 - **REST API**: Complete backend API for workout management
 
+## 🎯 Features
+
+### Core Features
+- **User Authentication**: Secure registration and login with JWT tokens
+- **Workout Tracking**: Create, view, update, and delete workout sessions
+- **Exercise Library**: Comprehensive database of exercises with search and filtering
+  - Filter by muscle group, category, difficulty
+  - Pre-loaded with 10+ default exercises
+  - Create custom exercises
+- **Detailed Exercise Logging**: Track sets, reps, weight for each exercise
+
+### Advanced Features
+- **Body Measurements Tracker**: Monitor weight, body fat %, and body measurements over time
+  - Visual progress charts with Chart.js
+  - Track multiple body metrics (chest, waist, hips, biceps, thighs)
+  - Historical data visualization
+
+- **Goals & Achievements**: Set and track fitness goals
+  - Strength goals, weight goals, workout frequency
+  - Visual progress bars
+  - Automatic completion detection
+  - Deadline tracking
+
+- **Analytics Dashboard**: Comprehensive workout statistics
+  - Total workouts and duration
+  - Workout frequency by month (bar charts)
+  - Current workout streak tracker
+  - Average workout duration
+  - Total volume lifted calculations
+
+- **Workout Templates**: Save and reuse favorite workout routines (backend ready)
+- **Responsive Design**: Beautiful gradient UI that works on all devices
+- **Data Visualization**: Interactive charts powered by Chart.js
+
 ## 🛠️ Tech Stack
 
 ### Backend
@@ -26,6 +60,7 @@ A modern full-stack gym training tracker application built with React, Node.js/E
 - **React 18** with TypeScript
 - **React Router** for navigation
 - **Axios** for API calls
+- **Chart.js** & react-chartjs-2 for data visualization
 - **CSS** for styling
 
 ## 📦 Project Structure
