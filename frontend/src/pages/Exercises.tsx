@@ -19,7 +19,6 @@ const Exercises: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [muscleFilter, setMuscleFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
 
   const muscleGroups = ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'legs', 'glutes', 'abs', 'cardio', 'full body'];
   const categories = ['strength', 'cardio', 'flexibility', 'powerlifting', 'olympic'];
@@ -29,7 +28,25 @@ const Exercises: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    filterExercises();
+    let filtered = exercises;
+
+    if (searchTerm) {
+      filtered = filtered.filter(ex =>
+        ex.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (muscleFilter) {
+      filtered = filtered.filter(ex =>
+        ex.muscleGroup.includes(muscleFilter)
+      );
+    }
+
+    if (categoryFilter) {
+      filtered = filtered.filter(ex => ex.category === categoryFilter);
+    }
+
+    setFilteredExercises(filtered);
   }, [searchTerm, muscleFilter, categoryFilter, exercises]);
 
   const fetchExercises = async () => {
@@ -42,28 +59,6 @@ const Exercises: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const filterExercises = () => {
-    let filtered = exercises;
-
-    if (searchTerm) {
-      filtered = filtered.filter(ex => 
-        ex.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (muscleFilter) {
-      filtered = filtered.filter(ex => 
-        ex.muscleGroup.includes(muscleFilter)
-      );
-    }
-
-    if (categoryFilter) {
-      filtered = filtered.filter(ex => ex.category === categoryFilter);
-    }
-
-    setFilteredExercises(filtered);
   };
 
   const seedExercises = async () => {
