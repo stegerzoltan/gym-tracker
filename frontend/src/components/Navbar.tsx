@@ -30,27 +30,6 @@ const Navbar: React.FC = () => {
           Workouts
         </a>
         <a 
-          href="/exercises" 
-          className="navbar-link"
-          style={{ color: isActive('/exercises') ? '#667eea' : undefined }}
-        >
-          Exercises
-        </a>
-        <a 
-          href="/measurements" 
-          className="navbar-link"
-          style={{ color: isActive('/measurements') ? '#667eea' : undefined }}
-        >
-          Measurements
-        </a>
-        <a 
-          href="/goals" 
-          className="navbar-link"
-          style={{ color: isActive('/goals') ? '#667eea' : undefined }}
-        >
-          Goals
-        </a>
-        <a 
           href="/analytics" 
           className="navbar-link"
           style={{ color: isActive('/analytics') ? '#667eea' : undefined }}
