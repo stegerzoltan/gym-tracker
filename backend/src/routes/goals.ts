@@ -5,10 +5,10 @@ import { Response } from 'express';
 
 const router = Router();
 
-// Get all goals for user
-router.get('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+// Get all goals (public)
+router.get('/', async (req, res) => {
   try {
-    const goals = await Goal.find({ userId: req.userId }).sort({ createdAt: -1 });
+    const goals = await Goal.find().sort({ createdAt: -1 });
     res.json(goals);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch goals' });

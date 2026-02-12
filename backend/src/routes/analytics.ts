@@ -5,10 +5,10 @@ import { Response } from 'express';
 
 const router = Router();
 
-// Get workout stats and analytics
-router.get('/stats', authMiddleware, async (req: AuthRequest, res: Response) => {
+// Get workout stats and analytics (public)
+router.get('/stats', async (req, res) => {
   try {
-    const workouts = await Workout.find({ userId: req.userId });
+    const workouts = await Workout.find();
     
     const totalWorkouts = workouts.length;
     const totalDuration = workouts.reduce((sum, w) => sum + w.duration, 0);

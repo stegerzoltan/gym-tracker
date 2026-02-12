@@ -5,25 +5,21 @@ import { Response } from 'express';
 
 const router = Router();
 
-// Get all exercises (default + user custom)
-router.get('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+// Get all exercises (public - default + custom)
+router.get('/', async (req, res) => {
   try {
-    const exercises = await Exercise.find({
-      $or: [{ isCustom: false }, { userId: req.userId }]
-    });
+    const exercises = await Exercise.find();
     res.json(exercises);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch exercises' });
   }
 });
 
-// Search and filter exercises
-router.get('/search', authMiddleware, async (req: AuthRequest, res: Response) => {
+// Search and filter exercises (public)
+router.get('/search', async (req, res) => {
   try {
     const { q, muscleGroup, category, difficulty } = req.query;
-    let query: any = {
-      $or: [{ isCustom: false }, { userId: req.userId }]
-    };
+    let query: any = {};
 
     if (q) {
       query.name = { $regex: q, $options: 'i' };

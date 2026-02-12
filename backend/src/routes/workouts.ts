@@ -5,10 +5,10 @@ import { Response } from 'express';
 
 const router = Router();
 
-// Get all workouts for user
-router.get('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+// Get all workouts (public)
+router.get('/', async (req, res) => {
   try {
-    const workouts = await Workout.find({ userId: req.userId });
+    const workouts = await Workout.find().sort({ date: -1 });
     res.json(workouts);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch workouts' });
