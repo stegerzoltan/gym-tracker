@@ -27,7 +27,8 @@ const Workouts: React.FC = () => {
     name: '',
     date: new Date().toISOString().split('T')[0],
     exercises: [],
-    duration: 0,
+    durationMinutes: 0,
+    durationSeconds: 0,
     notes: ''
   });
 
@@ -51,25 +52,38 @@ const Workouts: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const totalDuration = formData.durationMinutes + (formData.durationSeconds / 60);
+      const workoutData = {
+        name: formData.name,
+        date: formData.date,
+        exercises: formData.exercises,
+        duration: totalDuration,
+        notes: formData.notes
+      };
+
       if (editingId) {
-        await workoutService.update(editingId, formData);
+        await workoutService.update(editingId, workoutData);
         setEditingId(null);
       } else {
-        await workoutService.create(formData);
+        await workoutService.create(workoutData);
       }
-      setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], duration: 0, notes: '' });
-      setShowForm(false);
-      fetchWorkouts();
-    } catch (error) {
-      console.error('Failed to save workout:', error);
-    }
-  };
-
-  const handleEdit = (workout: Workout) => {
+    const minutes = Math.floor(workout.duration);
+    const seconds = Math.round((workout.duration - minutes) * 60);
+    
     setFormData({
       name: workout.name,
       date: workout.date.split('T')[0],
       exercises: workout.exercises,
+      durationMinutes: minutes,
+      durationSeconds: seconds,
+      notes: workout.notes
+    });
+    setEditingId(workout._id);
+    setShowForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], durationMinutes: 0, durationSeconds
       duration: workout.duration,
       notes: workout.notes
     });
@@ -142,14 +156,32 @@ const Workouts: React.FC = () => {
           </div>
           
           <div className="form-group">
-            <label>Duration (minutes)</label>
-            <input
-              type="number"
-              className="form-input"
-              value={formData.duration}
-              onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-              placeholder="60"
-            />
+            <label>Duration</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.875rem', color: '#718096' }}>Minutes</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={formData.durationMinutes}
+                  onChange={(e) => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })}
+                  placeholder="45"
+                  min="0"
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.875rem', color: '#718096' }}>Seconds</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={formData.durationSeconds}
+                  onChange={(e) => setFormData({ ...formData, durationSeconds: parseInt(e.target.value) || 0 })}
+                  placeholder="30"
+                  min="0"
+                  max="59"
+                />
+              </div>
+            </div>
           </div>
           
           <div className="form-group">
@@ -186,7 +218,7 @@ const Workouts: React.FC = () => {
                   month: 'short', 
                   day: 'numeric' 
                 })}</p>
-                <p>⏱️ {workout.duration} minutes</p>
+                <p>⏱️ {Math.floor(workout.duration)} perc {Math.round((workout.duration - Math.floor(workout.duration)) * 60)} másodperc</p>
                 <p>🏋️ {workout.exercises.length} exercises</p>
                 {workout.notes && <p>📝 {workout.notes}</p>}
               </div>
