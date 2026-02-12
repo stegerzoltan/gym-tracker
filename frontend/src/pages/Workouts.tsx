@@ -67,6 +67,15 @@ const Workouts: React.FC = () => {
       } else {
         await workoutService.create(workoutData);
       }
+      setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], durationMinutes: 0, durationSeconds: 0, notes: '' });
+      setShowForm(false);
+      fetchWorkouts();
+    } catch (error) {
+      console.error('Failed to save workout:', error);
+    }
+  };
+
+  const handleEdit = (workout: Workout) => {
     const minutes = Math.floor(workout.duration);
     const seconds = Math.round((workout.duration - minutes) * 60);
     
@@ -83,16 +92,7 @@ const Workouts: React.FC = () => {
   };
 
   const handleCancelEdit = () => {
-    setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], durationMinutes: 0, durationSeconds
-      duration: workout.duration,
-      notes: workout.notes
-    });
-    setEditingId(workout._id);
-    setShowForm(true);
-  };
-
-  const handleCancelEdit = () => {
-    setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], duration: 0, notes: '' });
+    setFormData({ name: '', date: new Date().toISOString().split('T')[0], exercises: [], durationMinutes: 0, durationSeconds: 0, notes: '' });
     setEditingId(null);
     setShowForm(false);
   };
