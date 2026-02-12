@@ -250,7 +250,7 @@ const Workouts: React.FC = () => {
                     borderRadius: '8px',
                     borderLeft: '3px solid #667eea'
                   }}>
-                    <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>
+                    <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5', color: '#1a202c', fontWeight: '500' }}>
                       📝 {workout.notes}
                     </p>
                   </div>
@@ -265,7 +265,7 @@ const Workouts: React.FC = () => {
                   fontSize: '1rem'
                 }}>
                   <span style={{ fontSize: '1.2rem' }}>⏱️</span>
-                  <span style={{ fontWeight: '600', color: '#4a5568' }}>
+                  <span style={{ fontWeight: '600', color: '#2d3748' }}>
                     {Math.floor(workout.duration)} perc {Math.round((workout.duration - Math.floor(workout.duration)) * 60)} másodperc
                   </span>
                 </div>
@@ -277,7 +277,7 @@ const Workouts: React.FC = () => {
                   gap: '0.5rem',
                   padding: '0.5rem 0',
                   fontSize: '0.95rem',
-                  color: '#718096'
+                  color: '#4a5568'
                 }}>
                   <span style={{ fontSize: '1.1rem' }}>📅</span>
                   <span>

@@ -23,6 +23,13 @@ const Navbar: React.FC = () => {
       </div>
       <div className="navbar-links">
         <a 
+          href="/workouts" 
+          className="navbar-link" 
+          style={{ color: isActive('/workouts') ? '#667eea' : undefined }}
+        >
+          Workouts
+        </a>
+        <a 
           href="/zolcoach" 
           className="navbar-link" 
           style={{ 
@@ -35,14 +42,7 @@ const Navbar: React.FC = () => {
             boxShadow: isActive('/zolcoach') ? '0 4px 12px rgba(255, 215, 0, 0.3)' : 'none'
           }}
         >
-          ⭐ Zol Coach Oldala
-        </a>
-        <a 
-          href="/workouts" 
-          className="navbar-link" 
-          style={{ color: isActive('/workouts') ? '#667eea' : undefined }}
-        >
-          Workouts
+          🏋️ Zol Coach Oldala
         </a>
         <a 
           href="/analytics" 
