@@ -20,6 +20,8 @@ const Exercises: React.FC = () => {
   const [muscleFilter, setMuscleFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
 
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
   const muscleGroups = ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'legs', 'glutes', 'abs', 'cardio', 'full body'];
   const categories = ['strength', 'cardio', 'flexibility', 'powerlifting', 'olympic'];
 
@@ -76,13 +78,15 @@ const Exercises: React.FC = () => {
     <div className="workouts-container">
       <div className="workouts-header">
         <h1>🏋️ Exercise Library</h1>
-        <button 
-          onClick={seedExercises}
-          className="btn btn-secondary"
-          style={{ width: 'auto', padding: '0.75rem 2rem' }}
-        >
-          Load Default Exercises
-        </button>
+        {isAdmin && (
+          <button 
+            onClick={seedExercises}
+            className="btn btn-secondary"
+            style={{ width: 'auto', padding: '0.75rem 2rem' }}
+          >
+            Load Default Exercises
+          </button>
+        )}
       </div>
 
       {/* Filters */}

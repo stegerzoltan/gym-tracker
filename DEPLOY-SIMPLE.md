@@ -14,6 +14,7 @@
    - **Instance Type**: `Free`
 
 5. **Environment Variables** (click "Advanced" → "Add Environment Variable"):
+
    ```
    MONGODB_URI=mongodb+srv://stegerzoltan_db_user:LvKadjuQq1iUCLOT@gym-tracker.kmmdxdt.mongodb.net/gym-tracker?retryWrites=true&w=majority
    JWT_SECRET=gym_tracker_secret_key_2024
@@ -31,6 +32,7 @@
 ## Step 2: Deploy Frontend to Vercel
 
 The deployment will start automatically with the commands below. When prompted:
+
 - **Set up and deploy?** → Yes
 - **Which scope?** → Your account
 - **Link to existing project?** → No

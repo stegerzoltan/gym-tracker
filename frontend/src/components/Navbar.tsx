@@ -4,14 +4,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const token = localStorage.getItem('token');
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem('isAdmin');
+    navigate('/admin');
+    window.location.reload();
   };
-
-  if (!token) return null;
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -57,9 +57,23 @@ const Navbar: React.FC = () => {
         >
           Analytics
         </a>
-        <button onClick={handleLogout} className="btn btn-secondary" style={{ width: 'auto', padding: '0.5rem 1.5rem' }}>
-          Logout
-        </button>
+        <a 
+          href="/admin" 
+          className="navbar-link"
+          style={{ 
+            color: isActive('/admin') ? '#667eea' : undefined,
+            backgroundColor: isAdmin ? 'rgba(102, 126, 234, 0.15)' : 'transparent',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px'
+          }}
+        >
+          {isAdmin ? '🔐 Admin' : 'Admin'}
+        </a>
+        {isAdmin && (
+          <button onClick={handleLogout} className="btn btn-secondary" style={{ width: 'auto', padding: '0.5rem 1.5rem' }}>
+            Logout
+          </button>
+        )}
       </div>
     </nav>
   );

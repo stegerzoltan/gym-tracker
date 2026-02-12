@@ -30,6 +30,8 @@ const Measurements: React.FC = () => {
     notes: ''
   });
 
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
   useEffect(() => {
     fetchMeasurements();
   }, []);
@@ -89,13 +91,15 @@ const Measurements: React.FC = () => {
     <div className="workouts-container">
       <div className="workouts-header">
         <h1>📏 Body Measurements</h1>
-        <button 
-          onClick={() => setShowForm(!showForm)}
-          className="btn btn-primary"
-          style={{ width: 'auto', padding: '0.75rem 2rem' }}
-        >
-          {showForm ? '✕ Cancel' : '+ Add Measurement'}
-        </button>
+        {isAdmin && (
+          <button 
+            onClick={() => setShowForm(!showForm)} 
+            className="btn btn-primary"
+            style={{ width: 'auto', padding: '0.75rem 2rem' }}
+          >
+            {showForm ? '✕ Cancel' : '+ Add Measurement'}
+          </button>
+        )}
       </div>
 
       {showForm && (

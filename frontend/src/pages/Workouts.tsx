@@ -31,6 +31,8 @@ const Workouts: React.FC = () => {
     notes: ''
   });
 
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
   useEffect(() => {
     fetchWorkouts();
   }, []);
@@ -98,16 +100,18 @@ const Workouts: React.FC = () => {
     <div className="workouts-container">
       <div className="workouts-header">
         <h1>💪 My Workouts</h1>
-        <button 
-          onClick={() => {
-            if (showForm) handleCancelEdit();
-            else setShowForm(true);
-          }} 
-          className="btn btn-primary"
-          style={{ width: 'auto', padding: '0.75rem 2rem' }}
-        >
-          {showForm ? '✕ Cancel' : '+ New Workout'}
-        </button>
+        {isAdmin && (
+          <button 
+            onClick={() => {
+              if (showForm) handleCancelEdit();
+              else setShowForm(true);
+            }} 
+            className="btn btn-primary"
+            style={{ width: 'auto', padding: '0.75rem 2rem' }}
+          >
+            {showForm ? '✕ Cancel' : '+ New Workout'}
+          </button>
+        )}
       </div>
 
       {showForm && (
@@ -186,14 +190,16 @@ const Workouts: React.FC = () => {
                 <p>🏋️ {workout.exercises.length} exercises</p>
                 {workout.notes && <p>📝 {workout.notes}</p>}
               </div>
-              <div className="workout-actions">
-                <button onClick={() => handleEdit(workout)} className="btn btn-primary" style={{ marginRight: '0.5rem' }}>
-                  Edit
-                </button>
-                <button onClick={() => handleDelete(workout._id)} className="btn btn-danger">
-                  Delete
-                </button>
-              </div>
+              {isAdmin && (
+                <div className="workout-actions">
+                  <button onClick={() => handleEdit(workout)} className="btn btn-primary" style={{ marginRight: '0.5rem' }}>
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(workout._id)} className="btn btn-danger">
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>

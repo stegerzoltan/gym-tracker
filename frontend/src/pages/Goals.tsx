@@ -78,13 +78,15 @@ const Goals: React.FC = () => {
     <div className="workouts-container">
       <div className="workouts-header">
         <h1>🎯 Goals & Targets</h1>
-        <button 
-          onClick={() => setShowForm(!showForm)}
-          className="btn btn-primary"
-          style={{ width: 'auto', padding: '0.75rem 2rem' }}
-        >
-          {showForm ? '✕ Cancel' : '+ New Goal'}
-        </button>
+        {isAdmin && (
+          <button 
+            onClick={() => setShowForm(!showForm)} 
+            className="btn btn-primary"
+            style={{ width: 'auto', padding: '0.75rem 2rem' }}
+          >
+            {showForm ? '✕ Cancel' : '+ New Goal'}
+          </button>
+        )}
       </div>
 
       {showForm && (
@@ -156,7 +158,7 @@ const Goals: React.FC = () => {
                   )}
                 </div>
 
-                {!goal.completed && (
+                {!goal.completed && isAdmin && (
                   <div style={{ marginTop: '1rem' }}>
                     <div className="form-group">
                       <label style={{ fontSize: '0.875rem' }}>Update Progress</label>
@@ -171,9 +173,11 @@ const Goals: React.FC = () => {
                   </div>
                 )}
 
-                <div className="workout-actions" style={{ marginTop: '1rem' }}>
-                  <button onClick={() => handleDelete(goal._id)} className="btn btn-danger">Delete</button>
-                </div>
+                {isAdmin && (
+                  <div className="workout-actions" style={{ marginTop: '1rem' }}>
+                    <button onClick={() => handleDelete(goal._id)} className="btn btn-danger">Delete</button>
+                  </div>
+                )}
               </div>
             </div>
           );
