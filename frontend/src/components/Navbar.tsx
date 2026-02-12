@@ -23,6 +23,21 @@ const Navbar: React.FC = () => {
       </div>
       <div className="navbar-links">
         <a 
+          href="/zolcoach" 
+          className="navbar-link" 
+          style={{ 
+            color: isActive('/zolcoach') ? '#667eea' : '#2d3748',
+            background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 165, 0, 0.15) 100%)',
+            border: '2px solid rgba(255, 215, 0, 0.3)',
+            fontWeight: 'bold',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            boxShadow: isActive('/zolcoach') ? '0 4px 12px rgba(255, 215, 0, 0.3)' : 'none'
+          }}
+        >
+          ⭐ Zol Coach Oldala
+        </a>
+        <a 
           href="/workouts" 
           className="navbar-link" 
           style={{ color: isActive('/workouts') ? '#667eea' : undefined }}

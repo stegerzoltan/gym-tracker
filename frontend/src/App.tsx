@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ZolCoach from './pages/ZolCoach';
 import Admin from './pages/Admin';
 import Workouts from './pages/Workouts';
 import Analytics from './pages/Analytics';
@@ -12,6 +13,7 @@ const App: React.FC = () => {
       <div className="app-container">
         <Navbar />
         <Routes>
+          <Route path="/zolcoach" element={<ZolCoach />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/analytics" element={<Analytics />} />
