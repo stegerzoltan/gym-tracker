@@ -232,10 +232,9 @@ const Workouts: React.FC = () => {
               <h3 style={{ 
                 marginBottom: '1rem', 
                 fontSize: '1.5rem',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontWeight: 'bold'
+                color: '#ffffff',
+                fontWeight: 'bold',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
               }}>
                 {workout.name}
               </h3>
