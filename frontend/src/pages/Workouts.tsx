@@ -209,26 +209,95 @@ const Workouts: React.FC = () => {
       ) : (
         <div className="workouts-grid">
           {workouts.map((workout) => (
-            <div key={workout._id} className="workout-card">
-              <h3>{workout.name}</h3>
+            <div 
+              key={workout._id} 
+              className="workout-card"
+              style={{
+                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+                border: '2px solid rgba(102, 126, 234, 0.1)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(102, 126, 234, 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(102, 126, 234, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                e.currentTarget.style.borderColor = 'rgba(102, 126, 234, 0.1)';
+              }}
+            >
+              <h3 style={{ 
+                marginBottom: '1rem', 
+                fontSize: '1.5rem',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 'bold'
+              }}>
+                {workout.name}
+              </h3>
+              
               <div className="workout-info">
-                <p>📅 {new Date(workout.date).toLocaleDateString('en-US', { 
-                  weekday: 'short', 
-                  year: 'numeric', 
-                  month: 'short', 
-                  day: 'numeric' 
-                })}</p>
-                <p>⏱️ {Math.floor(workout.duration)} perc {Math.round((workout.duration - Math.floor(workout.duration)) * 60)} másodperc</p>
-                <p>🏋️ {workout.exercises.length} exercises</p>
-                {workout.notes && <p>📝 {workout.notes}</p>}
+                {/* 1. Notes/Practice */}
+                {workout.notes && (
+                  <div style={{ 
+                    marginBottom: '0.75rem', 
+                    padding: '0.75rem',
+                    backgroundColor: 'rgba(102, 126, 234, 0.08)',
+                    borderRadius: '8px',
+                    borderLeft: '3px solid #667eea'
+                  }}>
+                    <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>
+                      📝 {workout.notes}
+                    </p>
+                  </div>
+                )}
+                
+                {/* 2. Duration */}
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  padding: '0.5rem 0',
+                  fontSize: '1rem'
+                }}>
+                  <span style={{ fontSize: '1.2rem' }}>⏱️</span>
+                  <span style={{ fontWeight: '600', color: '#4a5568' }}>
+                    {Math.floor(workout.duration)} perc {Math.round((workout.duration - Math.floor(workout.duration)) * 60)} másodperc
+                  </span>
+                </div>
+                
+                {/* 3. Date */}
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  padding: '0.5rem 0',
+                  fontSize: '0.95rem',
+                  color: '#718096'
+                }}>
+                  <span style={{ fontSize: '1.1rem' }}>📅</span>
+                  <span>
+                    {new Date(workout.date).toLocaleDateString('hu-HU', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </span>
+                </div>
               </div>
+              
               {isAdmin && (
-                <div className="workout-actions">
+                <div className="workout-actions" style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(102, 126, 234, 0.15)' }}>
                   <button onClick={() => handleEdit(workout)} className="btn btn-primary" style={{ marginRight: '0.5rem' }}>
-                    Edit
+                    Szerkesztés
                   </button>
                   <button onClick={() => handleDelete(workout._id)} className="btn btn-danger">
-                    Delete
+                    Törlés
                   </button>
                 </div>
               )}
