@@ -1,25 +1,16 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import ZolCoach from './pages/ZolCoach';
-import Admin from './pages/Admin';
-import Workouts from './pages/Workouts';
-import Analytics from './pages/Analytics';
-import Navbar from './components/Navbar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import AdminPanel from './pages/AdminPanel';
 import './styles/App.css';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <div className="app-container">
-        <Navbar />
-        <Routes>
-          <Route path="/zolcoach" element={<ZolCoach />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/workouts" element={<Workouts />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/" element={<Navigate to="/workouts" />} />
-        </Routes>
-      </div>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <Routes>
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="*" element={<Home />} />
+      </Routes>
     </Router>
   );
 };
