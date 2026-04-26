@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { workoutService } from '../services/api';
 
 interface Exercise {
   name: string;
