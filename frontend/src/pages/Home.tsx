@@ -4,17 +4,30 @@ import Workouts from './Workouts';
 const CORRECT_PASSWORD = 'szeretekedzeni';
 const STORAGE_KEY = 'zolcoach_access';
 
+function checkAccess() {
+  if (localStorage.getItem(STORAGE_KEY) === 'true') return true;
+  if (sessionStorage.getItem(STORAGE_KEY) === 'true') return true;
+  if (document.cookie.split(';').some(c => c.trim() === `${STORAGE_KEY}=true`)) return true;
+  return false;
+}
+
+function saveAccess() {
+  localStorage.setItem(STORAGE_KEY, 'true');
+  sessionStorage.setItem(STORAGE_KEY, 'true');
+  const expires = new Date();
+  expires.setFullYear(expires.getFullYear() + 1);
+  document.cookie = `${STORAGE_KEY}=true; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+}
+
 const Home: React.FC = () => {
-  const [isUnlocked, setIsUnlocked] = useState(
-    localStorage.getItem(STORAGE_KEY) === 'true'
-  );
+  const [isUnlocked, setIsUnlocked] = useState(checkAccess);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === CORRECT_PASSWORD) {
-      localStorage.setItem(STORAGE_KEY, 'true');
+      saveAccess();
       setIsUnlocked(true);
     } else {
       setError('Hibás jelszó! Próbálja újra.');

@@ -65,8 +65,16 @@ export const saveSnapshot = (workouts: Workout[], action: string) => {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 };
 
+const WORKOUTS_KEY = 'zolcoach_workouts';
+
 const Workouts: React.FC = () => {
-  const [workouts, setWorkouts] = useState<Workout[]>(SAMPLE_WORKOUTS);
+  const [workouts, setWorkouts] = useState<Workout[]>(() => {
+    try {
+      const saved = localStorage.getItem(WORKOUTS_KEY);
+      if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) return parsed; }
+    } catch { /* ignore */ }
+    return SAMPLE_WORKOUTS;
+  });
   const [loading, setLoading] = useState(true);
   const [editState, setEditState] = useState<EditState | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -83,16 +91,14 @@ const Workouts: React.FC = () => {
           const parsed = JSON.parse(restored);
           if (Array.isArray(parsed) && parsed.length > 0) {
             setWorkouts(parsed);
+            localStorage.setItem(WORKOUTS_KEY, JSON.stringify(parsed));
             localStorage.removeItem('restored_workouts');
             setLoading(false);
             return;
           }
         } catch { /* ignore */ }
       }
-      try {
-        const response = await workoutService.getAll();
-        if (response.data && response.data.length > 0) setWorkouts(response.data);
-      } catch { /* keep sample */ } finally { setLoading(false); }
+      setLoading(false);
     })();
   }, []);
 
@@ -123,6 +129,7 @@ const Workouts: React.FC = () => {
           : w
       );
       saveSnapshot(next, `Szerkesztés: ${editState.clientName} – ${editState.exerciseName}`);
+      localStorage.setItem(WORKOUTS_KEY, JSON.stringify(next));
       return next;
     });
     setEditState(null);
@@ -133,6 +140,7 @@ const Workouts: React.FC = () => {
       const target = prev.find(w => w._id === id);
       const next = prev.filter(w => w._id !== id);
       saveSnapshot(next, `Törlés: ${target?.exerciseName ? `${target.name} – ${target.exerciseName}` : target?.name || id}`);
+      localStorage.setItem(WORKOUTS_KEY, JSON.stringify(next));
       return next;
     });
     setEditState(null);
@@ -156,6 +164,7 @@ const Workouts: React.FC = () => {
     setWorkouts(prev => {
       const next = [newWorkout, ...prev];
       saveSnapshot(next, `Új edzés: ${addForm.clientName} – ${addForm.exerciseName}`);
+      localStorage.setItem(WORKOUTS_KEY, JSON.stringify(next));
       return next;
     });
     setAddForm({ clientName: '', exerciseName: '', rounds: '', weight: '', descriptionText: '', durationMinutes: '', durationSeconds: '', date: new Date().toISOString().split('T')[0] });
