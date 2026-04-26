@@ -71,6 +71,7 @@ const Workouts: React.FC = () => {
   const [editState, setEditState] = useState<EditState | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const isAdmin = localStorage.getItem('admin_logged_in') === 'true';
   const [addForm, setAddForm] = useState({ clientName: '', exerciseName: '', rounds: '', weight: '', descriptionText: '', durationMinutes: '', durationSeconds: '', date: new Date().toISOString().split('T')[0] });
 
   useEffect(() => {
@@ -343,8 +344,10 @@ const Workouts: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
-              <button onClick={saveEdit} className="btn btn-primary" style={{ flex: 2 }}>💾 Mentés</button>
-              <button onClick={() => { if (window.confirm('Biztosan törlöd?')) deleteCard(editState.id); }} style={{ flex: 1, padding: '0.75rem', border: 'none', borderRadius: '10px', background: '#fed7d7', color: '#c53030', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem' }}>🗑️ Törlés</button>
+              <button onClick={saveEdit} className="btn btn-primary" style={{ flex: isAdmin ? 2 : 1 }}>💾 Mentés</button>
+              {isAdmin && (
+                <button onClick={() => { if (window.confirm('Biztosan törlöd?')) deleteCard(editState.id); }} style={{ flex: 1, padding: '0.75rem', border: 'none', borderRadius: '10px', background: '#fed7d7', color: '#c53030', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem' }}>🗑️ Törlés</button>
+              )}
             </div>
           </div>
         </div>
