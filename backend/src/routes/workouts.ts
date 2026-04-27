@@ -1,12 +1,10 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import Workout from '../models/Workout';
-import { authMiddleware, AuthRequest } from '../middleware/auth';
-import { Response } from 'express';
 
 const router = Router();
 
-// Get all workouts (public)
-router.get('/', async (req, res) => {
+// Get all workouts
+router.get('/', async (req: Request, res: Response) => {
   try {
     const workouts = await Workout.find().sort({ date: -1 });
     res.json(workouts);
@@ -16,11 +14,10 @@ router.get('/', async (req, res) => {
 });
 
 // Create new workout
-router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const { name, date, exercises, duration, notes, exerciseName, rounds, weight, descriptionLines } = req.body;
     const workout = await Workout.create({
-      userId: req.userId,
       name,
       date,
       exercises,
@@ -38,9 +35,9 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 });
 
 // Get single workout
-router.get('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const workout = await Workout.findOne({ _id: req.params.id, userId: req.userId });
+    const workout = await Workout.findById(req.params.id);
     if (!workout) {
       return res.status(404).json({ error: 'Workout not found' });
     }
@@ -51,11 +48,11 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
 });
 
 // Update workout
-router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { name, date, exercises, duration, notes, exerciseName, rounds, weight, descriptionLines } = req.body;
-    const workout = await Workout.findOneAndUpdate(
-      { _id: req.params.id, userId: req.userId },
+    const workout = await Workout.findByIdAndUpdate(
+      req.params.id,
       { name, date, exercises, duration, notes, exerciseName, rounds, weight, descriptionLines, updatedAt: new Date() },
       { new: true }
     );
@@ -69,9 +66,9 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
 });
 
 // Delete workout
-router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
-    const workout = await Workout.findOneAndDelete({ _id: req.params.id, userId: req.userId });
+    const workout = await Workout.findByIdAndDelete(req.params.id);
     if (!workout) {
       return res.status(404).json({ error: 'Workout not found' });
     }
