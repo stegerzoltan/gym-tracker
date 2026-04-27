@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { workoutService } from '../services/api';
 
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin';
@@ -37,8 +38,37 @@ const AdminPanel: React.FC = () => {
   const [error, setError] = useState('');
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [restored, setRestored] = useState<string | null>(null);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [loadingWorkouts, setLoadingWorkouts] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const history: HistoryEntry[] = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+  useEffect(() => {
+    if (isLoggedIn) fetchWorkouts();
+  }, [isLoggedIn]);
+
+  const fetchWorkouts = async () => {
+    setLoadingWorkouts(true);
+    try {
+      const res = await workoutService.getAll();
+      setWorkouts(res.data);
+    } catch {
+      setDeleteError('Nem sikerült betölteni a kártyákat.');
+    } finally {
+      setLoadingWorkouts(false);
+    }
+  };
+
+  const handleDelete = async (id: string, label: string) => {
+    if (!window.confirm(`Biztosan törlöd: "${label}"?`)) return;
+    try {
+      await workoutService.delete(id);
+      setWorkouts(prev => prev.filter(w => w._id !== id));
+    } catch {
+      setDeleteError('Törlés sikertelen.');
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,6 +157,54 @@ const AdminPanel: React.FC = () => {
             ✅ Visszaállítva: {formatDate(restored)} — Az oldal újratöltésekor érvényes lesz.
           </div>
         )}
+
+        {/* Live workout list */}
+        <div style={{ background: 'white', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', marginBottom: '1.25rem' }}>
+          <h2 style={{ color: '#2d3748', fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.25rem' }}>🗂️ Összes kártya ({workouts.length} db)</h2>
+          {deleteError && (
+            <div style={{ background: '#fed7d7', color: '#c53030', borderRadius: '10px', padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.9rem', fontWeight: 600 }}>
+              ⚠️ {deleteError}
+            </div>
+          )}
+          {loadingWorkouts ? (
+            <p style={{ color: '#718096', textAlign: 'center', padding: '1.5rem 0' }}>Betöltés...</p>
+          ) : workouts.length === 0 ? (
+            <p style={{ color: '#718096', textAlign: 'center', padding: '1.5rem 0' }}>Nincs kártya az adatbázisban.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {workouts.map(w => {
+                const label = w.exerciseName ? `${w.name} – ${w.exerciseName}` : w.name;
+                const mins = Math.floor(w.duration);
+                const secs = Math.round((w.duration - mins) * 60);
+                const dateStr = new Date(w.date).toLocaleDateString('hu-HU');
+                return (
+                  <div key={w._id} style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '0.75rem 1rem', borderRadius: '10px',
+                    border: '1.5px solid rgba(102,126,234,0.15)', gap: '0.75rem',
+                    background: 'rgba(102,126,234,0.03)',
+                  }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontWeight: 700, color: '#2d3748', fontSize: '0.95rem', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</p>
+                      <p style={{ color: '#718096', fontSize: '0.8rem', margin: '0.15rem 0 0' }}>
+                        📅 {dateStr}{w.rounds ? ` · ${w.rounds} kör` : ''}{mins > 0 || secs > 0 ? ` · ${mins} perc${secs > 0 ? ` ${secs} mp` : ''}` : ''}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleDelete(w._id, label)}
+                      style={{
+                        padding: '0.4rem 0.9rem', border: 'none', borderRadius: '8px', flexShrink: 0,
+                        background: '#fed7d7', color: '#c53030', fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem',
+                      }}
+                    >
+                      🗑️ Törlés
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         {/* History */}
         <div style={{ background: 'white', borderRadius: '18px', padding: '1.5rem', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
