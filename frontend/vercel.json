@@ -15,6 +15,10 @@
       "dest": "/static/$1"
     },
     {
+      "src": "/(icon-192\\.png|icon-512\\.png|apple-touch-icon\\.png|manifest\\.json|favicon\\.ico)",
+      "dest": "/$1"
+    },
+    {
       "src": "/.*",
       "dest": "/index.html"
     }
