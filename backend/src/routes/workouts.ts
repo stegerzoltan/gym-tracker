@@ -18,14 +18,18 @@ router.get('/', async (req, res) => {
 // Create new workout
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { name, date, exercises, duration, notes } = req.body;
+    const { name, date, exercises, duration, notes, exerciseName, rounds, weight, descriptionLines } = req.body;
     const workout = await Workout.create({
       userId: req.userId,
       name,
       date,
       exercises,
       duration,
-      notes
+      notes,
+      exerciseName,
+      rounds,
+      weight,
+      descriptionLines
     });
     res.status(201).json(workout);
   } catch (error) {
@@ -49,10 +53,10 @@ router.get('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
 // Update workout
 router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { name, date, exercises, duration, notes } = req.body;
+    const { name, date, exercises, duration, notes, exerciseName, rounds, weight, descriptionLines } = req.body;
     const workout = await Workout.findOneAndUpdate(
       { _id: req.params.id, userId: req.userId },
-      { name, date, exercises, duration, notes, updatedAt: new Date() },
+      { name, date, exercises, duration, notes, exerciseName, rounds, weight, descriptionLines, updatedAt: new Date() },
       { new: true }
     );
     if (!workout) {

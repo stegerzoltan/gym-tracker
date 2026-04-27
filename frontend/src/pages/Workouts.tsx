@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { workoutService } from '../services/api';
 
 interface Exercise {
   name: string;
@@ -97,6 +98,13 @@ const Workouts: React.FC = () => {
           }
         } catch { /* ignore */ }
       }
+      try {
+        const response = await workoutService.getAll();
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setWorkouts(response.data);
+          localStorage.setItem(WORKOUTS_KEY, JSON.stringify(response.data));
+        }
+      } catch { /* use localStorage fallback */ }
       setLoading(false);
     })();
   }, []);
@@ -117,24 +125,43 @@ const Workouts: React.FC = () => {
     });
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (!editState) return;
     const duration = (parseInt(editState.durationMinutes) || 0) + (parseInt(editState.durationSeconds) || 0) / 60;
     const lines = editState.descriptionText.split('\n').map(l => l.trim()).filter(Boolean);
-    setWorkouts(prev => {
-      const next = prev.map(w =>
-        w._id === editState.id
-          ? { ...w, name: editState.clientName, exerciseName: editState.exerciseName, rounds: parseInt(editState.rounds) || undefined, weight: parseFloat(editState.weight) || undefined, descriptionLines: lines, duration, date: editState.date, notes: lines.join('\n') }
-          : w
-      );
-      saveSnapshot(next, `Szerkesztés: ${editState.clientName} – ${editState.exerciseName}`);
-      localStorage.setItem(WORKOUTS_KEY, JSON.stringify(next));
-      return next;
-    });
+    const updated = {
+      name: editState.clientName,
+      exerciseName: editState.exerciseName,
+      rounds: parseInt(editState.rounds) || undefined,
+      weight: parseFloat(editState.weight) || undefined,
+      descriptionLines: lines,
+      duration,
+      date: editState.date,
+      notes: lines.join('\n'),
+    };
+    try {
+      const response = await workoutService.update(editState.id, updated);
+      setWorkouts(prev => {
+        const next = prev.map(w => w._id === editState.id ? { ...w, ...response.data } : w);
+        saveSnapshot(next, `Szerkesztés: ${editState.clientName} – ${editState.exerciseName}`);
+        localStorage.setItem(WORKOUTS_KEY, JSON.stringify(next));
+        return next;
+      });
+    } catch {
+      setWorkouts(prev => {
+        const next = prev.map(w => w._id === editState.id ? { ...w, ...updated } : w);
+        saveSnapshot(next, `Szerkesztés: ${editState.clientName} – ${editState.exerciseName}`);
+        localStorage.setItem(WORKOUTS_KEY, JSON.stringify(next));
+        return next;
+      });
+    }
     setEditState(null);
   };
 
-  const deleteCard = (id: string) => {
+  const deleteCard = async (id: string) => {
+    try {
+      await workoutService.delete(id);
+    } catch { /* proceed with local removal */ }
     setWorkouts(prev => {
       const target = prev.find(w => w._id === id);
       const next = prev.filter(w => w._id !== id);
@@ -145,11 +172,10 @@ const Workouts: React.FC = () => {
     setEditState(null);
   };
 
-  const addCard = () => {
+  const addCard = async () => {
     const duration = (parseInt(addForm.durationMinutes) || 0) + (parseInt(addForm.durationSeconds) || 0) / 60;
     const lines = addForm.descriptionText.split('\n').map(l => l.trim()).filter(Boolean);
-    const newWorkout: Workout = {
-      _id: 'local_' + Date.now(),
+    const payload = {
       name: addForm.clientName,
       exerciseName: addForm.exerciseName,
       rounds: parseInt(addForm.rounds) || undefined,
@@ -160,8 +186,15 @@ const Workouts: React.FC = () => {
       exercises: [],
       notes: lines.join('\n'),
     };
+    let saved: Workout;
+    try {
+      const response = await workoutService.create(payload);
+      saved = response.data;
+    } catch {
+      saved = { _id: 'local_' + Date.now(), ...payload };
+    }
     setWorkouts(prev => {
-      const next = [newWorkout, ...prev];
+      const next = [saved, ...prev];
       saveSnapshot(next, `Új edzés: ${addForm.clientName} – ${addForm.exerciseName}`);
       localStorage.setItem(WORKOUTS_KEY, JSON.stringify(next));
       return next;

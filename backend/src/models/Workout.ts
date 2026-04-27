@@ -13,6 +13,10 @@ export interface IWorkout extends Document {
   }>;
   duration: number;
   notes: string;
+  exerciseName?: string;
+  rounds?: number;
+  weight?: number;
+  descriptionLines?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,6 +50,10 @@ const workoutSchema = new Schema<IWorkout>({
     default: 0
   },
   notes: String,
+  exerciseName: { type: String, trim: true },
+  rounds: Number,
+  weight: Number,
+  descriptionLines: [String],
   createdAt: {
     type: Date,
     default: Date.now
