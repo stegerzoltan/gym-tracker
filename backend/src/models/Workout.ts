@@ -29,12 +29,14 @@ const workoutSchema = new Schema<IWorkout>({
   },
   name: {
     type: String,
-    required: true,
-    trim: true
+    required: false,
+    trim: true,
+    default: ''
   },
   date: {
     type: Date,
-    required: true
+    required: false,
+    default: Date.now
   },
   exercises: [
     {

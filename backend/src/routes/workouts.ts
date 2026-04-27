@@ -29,8 +29,8 @@ router.post('/', async (req: Request, res: Response) => {
       descriptionLines
     });
     res.status(201).json(workout);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create workout' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to create workout', detail: error?.message });
   }
 });
 
@@ -60,8 +60,8 @@ router.put('/:id', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Workout not found' });
     }
     res.json(workout);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update workout' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to update workout', detail: error?.message });
   }
 });
 
