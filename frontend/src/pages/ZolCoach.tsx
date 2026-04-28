@@ -16,7 +16,7 @@ const ZolCoach: React.FC = () => {
           border: 'none',
           display: 'block'
         }}
-        title="Zol Coach Oldala"
+        title="Zoli Coach Oldala"
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { workoutService } from '../services/api';
 
 interface Exercise {
@@ -75,12 +75,32 @@ const Workouts: React.FC = () => {
     } catch { /* ignore */ }
     return SAMPLE_WORKOUTS;
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [editState, setEditState] = useState<EditState | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const isAdmin = localStorage.getItem('admin_logged_in') === 'true';
   const [addForm, setAddForm] = useState({ clientName: '', exerciseName: '', rounds: '', weight: '', descriptionText: '', durationMinutes: '', durationSeconds: '', date: new Date().toISOString().split('T')[0] });
+
+  useEffect(() => {
+    const handleScroll = () => setShowScrollTop(window.scrollY > 200);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleSearch = () => {
+    if (!showSearch) {
+      setShowSearch(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => searchInputRef.current?.focus(), 350);
+    } else {
+      setShowSearch(false);
+      setSearchQuery('');
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -222,36 +242,39 @@ const Workouts: React.FC = () => {
       </div>
 
       {/* Search filter */}
-      <div style={{ marginBottom: '1.25rem', position: 'relative' }}>
-        <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1rem', pointerEvents: 'none' }}>🔍</span>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          placeholder="Keresés névre vagy gyakorlatra..."
-          style={{
-            ...inputStyle,
-            paddingLeft: '2.4rem',
-            paddingRight: searchQuery ? '2.4rem' : '0.75rem',
-            background: 'rgba(255,255,255,0.92)',
-            border: '1.5px solid rgba(255,255,255,0.6)',
-            fontSize: '0.95rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          }}
-        />
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery('')}
-            style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#a0aec0', fontSize: '1.1rem', lineHeight: 1 }}
-          >✕</button>
-        )}
-      </div>
+      {showSearch && (
+        <div style={{ marginBottom: '1.25rem', position: 'relative', animation: 'slideDown 0.25s ease-out' }}>
+          <span style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1rem', pointerEvents: 'none' }}>🔍</span>
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Keresés névre vagy gyakorlatra..."
+            style={{
+              ...inputStyle,
+              paddingLeft: '2.4rem',
+              paddingRight: searchQuery ? '2.4rem' : '0.75rem',
+              background: 'rgba(255,255,255,0.92)',
+              border: '1.5px solid rgba(255,255,255,0.6)',
+              fontSize: '0.95rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#a0aec0', fontSize: '1.1rem', lineHeight: 1 }}
+            >✕</button>
+          )}
+        </div>
+      )}
 
       {/* Add form */}
       {showAddForm && (
         <div className="workout-form" style={{ marginBottom: '1.5rem' }}>
           <h2 style={{ marginBottom: '1.25rem', color: '#2d3748' }}>Új edzés hozzáadása</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          <div className="form-grid">
             <div><label style={labelStyle}>Vendég neve</label><input style={inputStyle} value={addForm.clientName} onChange={e => setAddForm(f => ({ ...f, clientName: e.target.value }))} /></div>
             <div><label style={labelStyle}>Gyakorlat neve</label><input style={inputStyle} value={addForm.exerciseName} onChange={e => setAddForm(f => ({ ...f, exerciseName: e.target.value }))} /></div>
             <div><label style={labelStyle}>Körök</label><input style={inputStyle} type="number" min="1" value={addForm.rounds} onChange={e => setAddForm(f => ({ ...f, rounds: e.target.value }))} /></div>
@@ -361,7 +384,7 @@ const Workouts: React.FC = () => {
               <button onClick={() => setEditState(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#a0aec0' }}>✕</button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div className="form-grid">
               <div><label style={labelStyle}>Vendég neve</label><input style={inputStyle} value={editState.clientName} onChange={e => setEditState(s => s && ({ ...s, clientName: e.target.value }))} /></div>
               <div><label style={labelStyle}>Gyakorlat neve</label><input style={inputStyle} value={editState.exerciseName} onChange={e => setEditState(s => s && ({ ...s, exerciseName: e.target.value }))} /></div>
               <div><label style={labelStyle}>Körök</label><input style={inputStyle} type="number" min="1" value={editState.rounds} onChange={e => setEditState(s => s && ({ ...s, rounds: e.target.value }))} /></div>
@@ -393,6 +416,43 @@ const Workouts: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Floating action buttons */}
+      <div style={{ position: 'fixed', bottom: '2rem', right: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', zIndex: 500 }}>
+        <button
+          onClick={toggleSearch}
+          title={showSearch ? 'Keresés bezárása' : 'Keresés'}
+          style={{
+            width: '48px', height: '48px', borderRadius: '50%', border: 'none',
+            background: showSearch ? 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white', fontSize: '1.25rem', cursor: 'pointer',
+            boxShadow: '0 4px 16px rgba(102,126,234,0.45)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+          }}
+          onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 6px 22px rgba(102,126,234,0.6)'; }}
+          onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(102,126,234,0.45)'; }}
+        >
+          {showSearch ? '✕' : '🔍'}
+        </button>
+        {showScrollTop && (
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            title="Vissza a lap tetejére"
+            style={{
+              width: '48px', height: '48px', borderRadius: '50%', border: 'none',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white', fontSize: '1.3rem', cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(102,126,234,0.45)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 6px 22px rgba(102,126,234,0.6)'; }}
+            onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(102,126,234,0.45)'; }}
+          >
+            ↑
+          </button>
+        )}
+      </div>
     </div>
   );
 };

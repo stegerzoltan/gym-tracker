@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
         </a>
         <a 
           href="/zolcoach" 
-          className="navbar-link" 
+          className="navbar-link navbar-link-coach" 
           style={{ 
             color: isActive('/zolcoach') ? '#667eea' : '#2d3748',
             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 165, 0, 0.15) 100%)',
@@ -42,7 +42,8 @@ const Navbar: React.FC = () => {
             boxShadow: isActive('/zolcoach') ? '0 4px 12px rgba(255, 215, 0, 0.3)' : 'none'
           }}
         >
-          🏋️ Zol Coach Oldala
+          <span className="coach-label-full">🏋️ Zoli Coach Oldala</span>
+          <span className="coach-label-short">🏋️</span>
         </a>
         <a 
           href="/analytics" 
